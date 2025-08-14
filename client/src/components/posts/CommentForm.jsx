@@ -39,7 +39,8 @@ const CommentForm = ({ postId, userId }) => {
         <input
           className="
             bg-neutral-700 text-[#D3D3D3]
-            rounded-l-lg border-none
+            rounded-lg border-none
+            w-full
             px-2 py-1
             focus:outline-none
           "

@@ -24,16 +24,19 @@ async def upload_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="No file uploaded")
 
     try:
-        s3_client.upload_fileobj(file.file, f"{os.getenv('S3_BUCKET_NAME')}", file.filename)
+        response = s3_client.upload_fileobj(file.file, f"{os.getenv('S3_BUCKET_NAME')}", file.filename)
         
-        response = s3_client.generate_presigned_url(
-            "get_object",
-            Params={"Bucket": os.getenv('S3_BUCKET_NAME'), "Key": file.filename},
-            ExpiresIn=36000
-        )
+        # response = s3_client.generate_presigned_url(
+        #     "get_object",
+        #     Params={"Bucket": os.getenv('S3_BUCKET_NAME'), "Key": file.filename},
+        #     ExpiresIn=36000
+        # )
+        print(f"Response: ", response)
+        print(f"DIR Response: ", dir(response))
+        url = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{file.filename}"
     except NoCredentialsError:
         raise HTTPException(status_code=403, detail="AWS credentials not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
 
-    return {"url": response}
+    return {"url": url}

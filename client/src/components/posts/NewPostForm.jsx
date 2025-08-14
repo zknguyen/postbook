@@ -20,7 +20,6 @@ const NewPostForm = () => {
     e.preventDefault();
     try {
       // TODO: Move this logic elsewhere
-      // TODO: Call upload API, get signed URL, set signed URL in post's database row
       var imageUrl = null;
       if (file) {
         const formData = new FormData();
