@@ -8,6 +8,7 @@ class Post(BaseModel):
     user_id: int = Field(..., alias="UserID")
     text_content: str = Field(..., alias="TextContent")
     num_likes: int = Field(..., alias="NumLikes")
+    media_url: Optional[str] = Field(default=None, alias="MediaURL")
 
 
 class PostID(BaseModel):
@@ -21,6 +22,7 @@ class PostSearch(BaseModel):
 class PostCreate(BaseModel):
     user_id: int = Field(..., alias="UserID")
     text_content: str = Field(..., alias="TextContent")
+    media_url: Optional[str] = Field(default=None, alias="MediaURL")
 
 class PostUpdate(BaseModel):
     text_content: Optional[str] = Field(default=None, alias="TextContent")

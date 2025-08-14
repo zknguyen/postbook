@@ -25,6 +25,7 @@ CREATE TABLE posts (
     REFERENCES users(user_id),
     text_content TEXT NOT NULL,
     num_likes INT NOT NULL DEFAULT 0,
+    media_url VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
 CREATE INDEX idx_created_at ON posts (created_at);

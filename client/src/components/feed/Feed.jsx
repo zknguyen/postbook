@@ -17,6 +17,7 @@ const GET_FEED_POSTS = gql`
         postId
         textContent
         numLikes
+        mediaUrl
         likes {
           userId
         }

@@ -1,9 +1,7 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi.security import OAuth2PasswordBearer
 
-from fastapi import APIRouter, HTTPException, Depends, Path, Query, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-from schemas.post import Post, PostID, PostSearch, PostCreate, PostUpdate
+from schemas.post import Post, PostID, PostCreate, PostUpdate
 from services.post_service import PostService
 
 router = APIRouter(

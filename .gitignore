@@ -1,6 +1,9 @@
 # Ignore all .env files
 *.env
 
+# Ignore venv directory
+/venv/
+
 # Ignore secrets directory in api
 /api/secrets/
 

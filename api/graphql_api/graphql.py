@@ -48,6 +48,7 @@ class Post:
     user_id: strawberry.ID
     text_content: str
     num_likes: int
+    media_url: str
     created_at: str  # Use String for datetime if not using DateTime type
 
     @strawberry.field
@@ -126,6 +127,7 @@ class FeedPost:
                 text_content=post.text_content,
                 user_id=post.user_id,
                 num_likes=post.num_likes,
+                media_url=post.media_url,
                 created_at=post.created_at,
             ) if post else None
 
@@ -154,6 +156,7 @@ class Query:
                 text_content=post.text_content,
                 user_id=post.user_id,
                 num_likes=post.num_likes,
+                media_url=post.media_url,
                 created_at=post.created_at,
             ) if post else None
         
@@ -170,6 +173,7 @@ class Query:
                     text_content=post.text_content,
                     user_id=post.user_id,
                     num_likes=post.num_likes,
+                    media_url=post.media_url,
                     created_at=post.created_at,
                 ) for post in posts
             ]

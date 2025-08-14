@@ -1,6 +1,6 @@
 from typing import Union
 
-from fastapi import APIRouter, HTTPException, Depends, Header, Path, Query
+from fastapi import APIRouter, HTTPException, Header, Path, Query
 from fastapi.security import OAuth2PasswordBearer
 
 from schemas.user import User, UserID, UserCreate

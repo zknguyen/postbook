@@ -27,6 +27,7 @@ class PostService:
             "UserID": post.user_id,
             "TextContent": post.text_content,
             "NumLikes": post.num_likes,
+            "MediaURL": post.media_url,
         }
 
     async def search_posts(self, limit: int, offset: int, user_id: Optional[int] = None):
@@ -51,6 +52,7 @@ class PostService:
                 "UserID": post.user_id,
                 "TextContent": post.text_content,
                 "NumLikes": post.num_likes,
+                "MediaURL": post.media_url,
             } for post in posts
         ]
 
@@ -60,6 +62,7 @@ class PostService:
             .values(
                 user_id=request_body.user_id,
                 text_content=request_body.text_content,
+                media_url=request_body.media_url,
             )
             .returning(Post.post_id)
         )

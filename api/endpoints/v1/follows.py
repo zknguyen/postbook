@@ -1,7 +1,5 @@
-from typing import List
-
-from fastapi import APIRouter, HTTPException, Depends, Header, Path, Query, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import APIRouter, HTTPException, Path
+from fastapi.security import OAuth2PasswordBearer
 
 from schemas.follow import FollowCreate, FollowID
 from services.follow_service import FollowService
@@ -11,7 +9,7 @@ router = APIRouter(
     tags = ["follows"],
 )
 
-
+# TODO: Implement OAuth2 authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
