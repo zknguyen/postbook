@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path
 from fastapi.security import OAuth2PasswordBearer
 
+from dependencies.dependencies import verify_token
 from schemas.follow import FollowCreate, FollowID
 from services.follow_service import FollowService
 
@@ -15,11 +16,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("", response_model=FollowID)
 async def create_follow(
-    request_body: FollowCreate
+    request_body: FollowCreate,
+    current_user = Depends(verify_token),
 ):
     """
     Creates a follow relationship, with the follower following the followee
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = FollowService()
     response = await service.create_follow(request_body)
     if not response:
@@ -29,10 +33,15 @@ async def create_follow(
 
 
 @router.delete("/{FollowID}")
-async def delete_follow(follow_id: int = Path(alias="FollowID")):
+async def delete_follow(
+    follow_id: int = Path(alias="FollowID"),
+    current_user = Depends(verify_token),
+):
     """
     Deletes a follow relationship
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = FollowService()
     response = await service.delete_follow(follow_id)
     if not response:

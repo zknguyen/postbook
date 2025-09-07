@@ -1,8 +1,8 @@
 from typing import Union
 
-from fastapi import APIRouter, HTTPException, Header, Path, Query
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, HTTPException, Depends, Header, Path, Query
 
+from dependencies.dependencies import verify_token
 from schemas.user import User, UserID, UserCreate
 from services.feed_service import FeedService
 from services.user_service import UserService
@@ -13,63 +13,48 @@ router = APIRouter(
 )
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-
-@router.get("/me", response_model=Union[User, None])
-async def get_current_user(authorization: str = Header(...)):
-    service = UserService()
-    response = await service.verify_current_user(authorization.split(" ")[1])
-
-    if not response:
-        return 
-
-    return response
-
-
 @router.get("/{UserID}", response_model=User)
 async def get_user(
-    user_id: int = Path(alias="UserID")
+    current_user = Depends(verify_token),
+    user_id: int = Path(alias="UserID"),
 ):
     """
-    Get a user by their ID.
+    Get a user by their ID or Firebase UID.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = UserService()
     response = await service.get_user(user_id)
+
     if not response:
         raise HTTPException(status_code=404, detail="User not found")
-
     return response
 
 
-@router.get("", response_model=list[User])
-async def get_users_by_field(
-    limit: int = Query(10, le=100),
-    offset: int = Query(0),
-    username: str | None = Query(None, alias="Username"),
-    first_name: str | None = Query(None, alias="FirstName"),
-    last_name: str | None = Query(None, alias="LastName"),
-    firebase_uid: str | None = Query(None, alias="FirebaseUID"),
-    email: str | None = Query(None, alias="Email"),
-):
+@router.get("/by-firebase-id/{FirebaseUID}")
+async def get_user_by_firebase_id(firebase_id: str = Path(alias="FirebaseUID")):
     """
-    Search for users based on the request body.
+    Get a user by their Firebase UID.
     """
     service = UserService()
-    response = await service.get_users_by_field(limit, offset, username, first_name, last_name, firebase_uid, email)
-    if not response:
-        raise HTTPException(status_code=404, detail="No users found")
+    response = await service.get_user_by_firebase_id(firebase_id)
 
+    # TODO: implement some sort of error handling
+    # if not response:
+    #     raise HTTPException(status_code=404, detail="User not found")
     return response
 
 
 @router.post("", response_model=UserID)
 async def create_user(
-    request_body: UserCreate
+    request_body: UserCreate,
+    current_user = Depends(verify_token),
 ):
     """
     Create a new user and corresponding feed.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     user_service = UserService()
     user_response = await user_service.create_user(request_body)
     if not user_response:

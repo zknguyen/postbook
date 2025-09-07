@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useAuth();
+  const { token, user, setUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,21 +20,34 @@ const CreateUser = () => {
 
       const response = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/users`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(body),
       });
-      if (response.ok) {
-        const data = await response.json();
-        const userId = data.UserID;
-
-        const response2 = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/users/${userId}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const user = await response2.json();
-        setUser(user);
-        navigate('/');
+      if (!response.ok) {
+        throw new Error('Failed to create user');
       }
+
+      const data = await response.json();
+      const userId = data.UserID;
+
+      console.log(`User created with ID: ${userId}`);
+      const response2 = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/users/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response2.ok) {
+        throw new Error('Failed to retrieve user');
+      }
+
+      const userData = await response2.json();
+      setUser(userData);
+      navigate('/');
     } catch (error) {
       console.error('Create user failed: ', error);
     }

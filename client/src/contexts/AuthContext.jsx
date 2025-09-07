@@ -10,6 +10,7 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState('');
   const [loading, setLoading] = useState(true);
   
   const headers = {
@@ -22,13 +23,13 @@ export function AuthProvider({ children }) {
     try {
       const userCredential = await signInWithPopup(auth, provider);
       const token = await userCredential.user.getIdToken();
-
+      setToken(token);
       // Verify user
-      const response = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/users/me`, {
+      const response = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/users/by-firebase-id/${userCredential.user.uid}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`
-        }
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -63,7 +64,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading, headers }}>
+    <AuthContext.Provider value={{ user, setUser, token, login, logout, loading, headers }}>
       {!loading && children}
     </AuthContext.Provider>
   );

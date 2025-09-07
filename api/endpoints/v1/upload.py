@@ -1,7 +1,9 @@
-from fastapi import APIRouter, File, UploadFile, HTTPException
+from fastapi import APIRouter, Depends, File, UploadFile, HTTPException
 import boto3
 from botocore.exceptions import NoCredentialsError
 import os
+
+from dependencies.dependencies import verify_token
 
 
 router = APIRouter(
@@ -19,20 +21,18 @@ s3_client = boto3.client(
 
 
 @router.post("")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(
+    current_user = Depends(verify_token),
+    file: UploadFile = File(...),
+):
+    print(f"Current user (upload): {current_user}")
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     if not file:
         raise HTTPException(status_code=400, detail="No file uploaded")
 
     try:
-        response = s3_client.upload_fileobj(file.file, f"{os.getenv('S3_BUCKET_NAME')}", file.filename)
-        
-        # response = s3_client.generate_presigned_url(
-        #     "get_object",
-        #     Params={"Bucket": os.getenv('S3_BUCKET_NAME'), "Key": file.filename},
-        #     ExpiresIn=36000
-        # )
-        print(f"Response: ", response)
-        print(f"DIR Response: ", dir(response))
+        s3_client.upload_fileobj(file.file, f"{os.getenv('S3_BUCKET_NAME')}", file.filename)
         url = f"https://{os.getenv('S3_BUCKET_NAME')}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{file.filename}"
     except NoCredentialsError:
         raise HTTPException(status_code=403, detail="AWS credentials not found")

@@ -9,7 +9,7 @@ const NewPostForm = () => {
   const fileInputRef = useRef();
 
   // TODO: Remove headers?
-  const { user, headers } = useAuth();
+  const { user, token, headers } = useAuth();
   const dispatch = useDispatch();
 
   const handleButtonClick = () => {
@@ -28,6 +28,9 @@ const NewPostForm = () => {
         const uploadResponse = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/upload`, {
           method: 'POST',
           body: formData,
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
         });
         const uploadData = await uploadResponse.json();
         imageUrl = uploadData.url;
@@ -44,10 +47,14 @@ const NewPostForm = () => {
         'TextContent': formData.get('text-content'),
         'MediaURL': imageUrl,
       };
+      console.log("Post Body: ", postBody);
 
       const response = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/posts`, {
         method: 'POST',
-        headers: headers,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(postBody),
       })
       if (!response.ok) {
@@ -63,7 +70,10 @@ const NewPostForm = () => {
       }
       const response2 = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/feeds/posts/${user.UserID}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(feedPostBody),
       });
       if (response2.ok) {

@@ -102,7 +102,7 @@ const FeedPost = ({ feedPost }) => {
     <div className="bg-neutral-800 text-left rounded-lg justify-start w-100% m-1 p-2">
       <p className="font-bold m-2 hover:underline hover:cursor-pointer" onClick={handleUserClick}>{feedPost.user.username}</p>
       <p className="m-2">{feedPost.post.textContent}</p>
-      <img src={feedPost.post.mediaUrl} alt="Post media" className="w-full h-auto rounded-lg" />
+      {feedPost.post.mediaUrl && <img src={feedPost.post.mediaUrl} alt="Post media" className="w-full h-auto rounded-lg" />}
       <p className="text-neutral-400 !text-sm m-2">{feedPost.post.numLikes}</p>
       <hr className="border-neutral-400 m-2" />
       <div className="flex justify-between items-center m-2">

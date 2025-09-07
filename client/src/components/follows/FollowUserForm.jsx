@@ -11,8 +11,13 @@ const FollowUserForm = () => {
       const formData = new FormData(e.target);
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_SERVER_URL}/v1/users/?limit=1&offset=0&Username=${formData.get('username')}`,
-        { method: 'GET' }
+        `${import.meta.env.VITE_API_SERVER_URL}/v1/users/?limit=1&offset=0&Username=${formData.get('username')}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
       );
       const data = await response.json();
       if (data.hasOwnProperty('detail')) {
@@ -29,7 +34,10 @@ const FollowUserForm = () => {
 
       const response2 = await fetch(`${import.meta.env.VITE_API_SERVER_URL}/v1/follows`, {
         method: 'POST',
-        headers,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(body),
       });
       const data2 = await response2.json();

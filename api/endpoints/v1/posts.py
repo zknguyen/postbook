@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Depends, Path, Query
 from fastapi.security import OAuth2PasswordBearer
 
+from dependencies.dependencies import verify_token
 from schemas.post import Post, PostID, PostCreate, PostUpdate
 from services.post_service import PostService
 
@@ -14,10 +15,15 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get("/{PostID}", response_model=Post)
-async def get_post(post_id: int = Path(alias="PostID")):
+async def get_post(
+    post_id: int = Path(alias="PostID"),
+    current_user = Depends(verify_token),
+):
     """
     Get a post by its ID.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = PostService()
     response = await service.get_post(post_id)
     if not response:
@@ -44,10 +50,15 @@ async def search_posts(
 
 
 @router.post("", response_model=PostID)
-async def create_post(request_body: PostCreate):
+async def create_post(
+    request_body: PostCreate,
+    current_user = Depends(verify_token),
+):
     """
     Create a new post.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = PostService()
     response = await service.create_post(request_body)
     if not response:
@@ -57,10 +68,16 @@ async def create_post(request_body: PostCreate):
 
 
 @router.put("/{PostID}", response_model=PostID)
-async def update_post(request_body: PostUpdate, post_id: int = Path(alias="PostID")):
+async def update_post(
+    request_body: PostUpdate,
+    post_id: int = Path(alias="PostID"),
+    current_user = Depends(verify_token),
+):
     """
     Update an existing post.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = PostService()
     response = await service.update_post(post_id, request_body)
     if not response:
@@ -70,10 +87,15 @@ async def update_post(request_body: PostUpdate, post_id: int = Path(alias="PostI
 
 
 @router.delete("/{PostID}")
-async def delete_post(post_id: int = Path(alias="PostID")):
+async def delete_post(
+    post_id: int = Path(alias="PostID"),
+    current_user = Depends(verify_token),
+):
     """
     Delete a post by its ID.
     """
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     service = PostService()
     response = await service.delete_post(post_id)
     if not response:

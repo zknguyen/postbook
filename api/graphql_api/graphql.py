@@ -1,5 +1,5 @@
 import strawberry
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,7 +48,7 @@ class Post:
     user_id: strawberry.ID
     text_content: str
     num_likes: int
-    media_url: str
+    media_url: Optional[str] = None
     created_at: str  # Use String for datetime if not using DateTime type
 
     @strawberry.field
