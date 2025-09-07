@@ -22,14 +22,17 @@ async def get_post(
     """
     Get a post by its ID.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = PostService()
-    response = await service.get_post(post_id)
-    if not response:
-        raise HTTPException(status_code=404, detail="Post not found")
-    
-    return response
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = PostService()
+        response = await service.get_post(post_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("", response_model=list[Post])
@@ -41,12 +44,15 @@ async def search_posts(
     """
     Search for posts based on the query parameters.
     """
-    service = PostService()
-    response = await service.search_posts(limit, offset, user_id)
-    if not response:
-        raise HTTPException(status_code=404, detail="No posts found")
-    
-    return response
+    try:
+        service = PostService()
+        response = await service.search_posts(limit, offset, user_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="No posts found")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("", response_model=PostID)
@@ -76,14 +82,17 @@ async def update_post(
     """
     Update an existing post.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = PostService()
-    response = await service.update_post(post_id, request_body)
-    if not response:
-        raise HTTPException(status_code=404, detail="Post not found or update failed")
-    
-    return response
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = PostService()
+        response = await service.update_post(post_id, request_body)
+        if not response:
+            raise HTTPException(status_code=404, detail="Post not found or update failed")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/{PostID}")
@@ -94,11 +103,14 @@ async def delete_post(
     """
     Delete a post by its ID.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = PostService()
-    response = await service.delete_post(post_id)
-    if not response:
-        raise HTTPException(status_code=404, detail="Post not found or deletion failed")
-    
-    return {"detail": "Post deleted successfully"}
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = PostService()
+        response = await service.delete_post(post_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="Post not found or deletion failed")
+        
+        return {"detail": "Post deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

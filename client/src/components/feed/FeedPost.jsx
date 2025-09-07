@@ -63,7 +63,6 @@ const FeedPost = ({ feedPost }) => {
   // Local state for comment input
   const [showCommentInput, setShowCommentInput] = useState(false);
 
-  // TODO: Rename all these
   const handleUserClick = () => {
     navigate(`/user/${feedPost.user.userId}`);
   };

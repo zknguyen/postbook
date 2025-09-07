@@ -31,18 +31,18 @@ export function AuthProvider({ children }) {
           Authorization: `Bearer ${token}`
         },
       });
-      if (response.ok) {
-        const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Could not verify user');
+      }
+      
+      const data = await response.json();
 
-        // Navigate to createUser page if there isn't a user registered with the login email
-        if (data) {
-          setUser(data);
-          navigate('/');
-        } else {
-          navigate('/create-user');
-        }
+      // Navigate to createUser page if there isn't a user registered with the login email
+      if (data) {
+        setUser(data);
+        navigate('/');
       } else {
-        throw new Error(`Request failed with status ${response.status}`);
+        navigate('/create-user');
       }
     } catch (error) {
       console.error('Login failed: ', error);

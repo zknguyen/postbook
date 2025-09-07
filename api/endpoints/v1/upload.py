@@ -25,7 +25,6 @@ async def upload_file(
     current_user = Depends(verify_token),
     file: UploadFile = File(...),
 ):
-    print(f"Current user (upload): {current_user}")
     if not current_user:
         raise HTTPException(status_code=401, detail="Unauthorized")
     if not file:

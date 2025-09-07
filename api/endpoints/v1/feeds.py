@@ -28,14 +28,17 @@ async def get_feed(
     """
     Gets all FeedPosts for a given user's feed.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = FeedService()
-    response = await service.get_feed(user_id)
-    if not response:
-        raise HTTPException(status_code=404, detail="Feed not found")
-    
-    return response
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = FeedService()
+        response = await service.get_feed(user_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="Feed not found")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/{UserID}", response_model = FeedID)
@@ -46,14 +49,17 @@ async def create_feed(
     """
     Gets all FeedPosts for a given user's feed.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = FeedService()
-    response = await service.create_feed(user_id)
-    if not response:
-        raise HTTPException(status_code=400, detail="Failed to create feed")
-    
-    return response
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = FeedService()
+        response = await service.create_feed(user_id)
+        if not response:
+            raise HTTPException(status_code=400, detail="Failed to create feed")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/posts/{UserID}")
@@ -65,11 +71,14 @@ async def update_feeds(
     """
     Pushes a post to feeds of all followers of a given user.
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = FeedService()
-    response = await service.update_feeds(user_id, request_body)
-    if not response:
-        raise HTTPException(status_code=400, detail="Failed to create feed post")
-    
-    return response
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = FeedService()
+        response = await service.update_feeds(user_id, request_body)
+        if not response:
+            raise HTTPException(status_code=400, detail="Failed to create feed post")
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

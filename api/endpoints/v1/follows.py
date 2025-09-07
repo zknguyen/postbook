@@ -10,9 +10,6 @@ router = APIRouter(
     tags = ["follows"],
 )
 
-# TODO: Implement OAuth2 authentication
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 @router.post("", response_model=FollowID)
 async def create_follow(
@@ -22,14 +19,17 @@ async def create_follow(
     """
     Creates a follow relationship, with the follower following the followee
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = FollowService()
-    response = await service.create_follow(request_body)
-    if not response:
-        raise HTTPException(status_code=400, detail="Follow creation failed")
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = FollowService()
+        response = await service.create_follow(request_body)
+        if not response:
+            raise HTTPException(status_code=400, detail="Follow creation failed")
 
-    return response
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.delete("/{FollowID}")
@@ -40,11 +40,14 @@ async def delete_follow(
     """
     Deletes a follow relationship
     """
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    service = FollowService()
-    response = await service.delete_follow(follow_id)
-    if not response:
-        raise HTTPException(status_code=404, detail="Follow not found or deletion failed")
-    
-    return {"detail": "Follow deleted successfully"}
+    try:
+        if not current_user:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        service = FollowService()
+        response = await service.delete_follow(follow_id)
+        if not response:
+            raise HTTPException(status_code=404, detail="Follow not found or deletion failed")
+        
+        return {"detail": "Follow deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
